@@ -1,0 +1,46 @@
+{
+  "name": "Deployment control review",
+  "on": {
+    "workflow_dispatch": {}
+  },
+  "permissions": {
+    "contents": "read"
+  },
+  "jobs": {
+    "validate": {
+      "runs-on": "ubuntu-latest",
+      "steps": [
+        {
+          "uses": "actions/checkout@v4"
+        },
+        {
+          "uses": "actions/setup-python@v5",
+          "with": {
+            "python-version": "3.12"
+          }
+        },
+        {
+          "run": "python3 -m unittest -v"
+        }
+      ]
+    },
+    "production": {
+      "needs": [],
+      "if": "${{ always() }}",
+      "environment": "sandbox",
+      "permissions": {
+        "contents": "write"
+      },
+      "runs-on": "ubuntu-latest",
+      "steps": [
+        {
+          "name": "Inspect reference only; no deployment",
+          "env": {
+            "RELEASE_TOKEN": "DEMO_PLACEHOLDER_NOT_A_SECRET"
+          },
+          "run": "echo \"Preview only. No deployment or token output.\""
+        }
+      ]
+    }
+  }
+}
